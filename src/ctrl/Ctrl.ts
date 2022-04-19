@@ -10,9 +10,40 @@ class Ctrl implements ICtrlWrk {
         this._wrk = null;
     }
 
-    public start(): void {
-        this.getWrk().start(1233)
-        console.log("Ctrl.start");
+    public async start(): Promise<void> {
+        let router = await this.getWrk().initRouter();
+        if (router) {
+            console.log("Ctrl: Router started");
+            let nodeOk = await this.getWrk().start(5002, router);
+            if (nodeOk) {
+                console.log("Ctrl: Node started");
+            } else {
+                console.log("Ctrl: Node not started");
+            }
+        } else {
+            console.log("Error while initiating the router");
+        }
+    }
+
+    public handleLogin(_req, _res): void {
+        _res.status(200).send("Login");
+    }
+
+    handleLogout(_req, _res): void {
+        _res.status(200).send("Logout");
+    }
+
+    handleNotFound(_req, _res): void {
+        _res.status(404)
+            .send({
+                error: true,
+                message: "The requested resource could not be found.",
+                status: 404
+            });
+    }
+
+    handleRegister(_req, _res): void {
+        _res.status(200).send("Register");
     }
 
     // SETTERS & GETTERS //
