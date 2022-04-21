@@ -3,6 +3,8 @@ import ICtrlWrk from "../ctrl/ICtrlWrk";
 import App from "./core/App";
 import RouterCore from "./router/RouterCore";
 import {Router} from "express";
+import WrkToken from "./WrkToken";
+import WrkAuthentication from "./WrkAuthentication";
 
 /**
  * Worker class of the application.
@@ -18,12 +20,16 @@ class Wrk implements IWrkCtrl {
 
     private readonly _wrkNodeServer: App;
     private readonly _wrkRouter: RouterCore;
+    private readonly _wrkToken: WrkToken;
+    private readonly _wrkAuthentication: WrkAuthentication;
 
     constructor() {
         this._ctrl = null;
 
         this._wrkNodeServer = new App();
         this._wrkRouter = new RouterCore();
+        this._wrkToken = new WrkToken();
+        this._wrkAuthentication = new WrkAuthentication();
 
         this._wrkRouter.setWrk(this);
     }
@@ -38,6 +44,14 @@ class Wrk implements IWrkCtrl {
 
     public async start(_port: number, _router: Router): Promise<boolean> {
         return this._wrkNodeServer.start(_port, _router);
+    }
+
+    public async isValid(_token: string): Promise<boolean> {
+        return this._wrkToken.isValid(_token);
+    }
+
+    public async isConnected(_user): Promise<boolean> {
+        return this._wrkAuthentication.isConnected(_user);
     }
 
     public setCtrl(ctrl: ICtrlWrk): void {

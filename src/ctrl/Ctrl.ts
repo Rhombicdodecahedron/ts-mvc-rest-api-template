@@ -30,7 +30,11 @@ class Ctrl implements ICtrlWrk {
     }
 
     handleLogout(_req, _res): void {
-        _res.status(200).send("Logout");
+        this.checkToken(_req, _res, () => {
+            this.checkAuth(_req, _res, () => {
+                _res.status(200).send("Logout");
+            });
+        });
     }
 
     handleNotFound(_req, _res): void {
@@ -44,6 +48,67 @@ class Ctrl implements ICtrlWrk {
 
     handleRegister(_req, _res): void {
         _res.status(200).send("Register");
+    }
+
+    private checkAuth(_req, _res, _next): void {
+        const {user} = _req.session;
+
+        this.getWrk().isConnected(user)
+            .then((isConnected) => {
+                if (isConnected) {
+                    _next();
+                } else {
+                    _res.status(401)
+                        .send({
+                            error: true,
+                            message: "You are not authorized to access this resource.",
+                            status: 401
+                        });
+                }
+            })
+            .catch((err) => {
+                _res.status(500)
+                    .send({
+                        error: true,
+                        message: "Internal server error.",
+                        status: 500
+                    });
+            });
+    }
+
+    private checkToken(_req, _res, next): void {
+        const token = _req.header('x-auth-token');
+        // Check for token
+        if (!token) {
+            _res.status(401)
+                .json({
+                    error: true,
+                    message: 'No token provided.',
+                    status: 401
+                });
+        } else {
+            this.getWrk().isValid(token)
+                .then((result) => {
+                    if (result) {
+                        next();
+                    } else {
+                        _res.status(401)
+                            .json({
+                                error: true,
+                                message: 'Token is not valid.',
+                                status: 401
+                            });
+                    }
+                })
+                .catch((err) => {
+                    _res.status(500)
+                        .send({
+                            error: true,
+                            message: "Internal server error.",
+                            status: 500
+                        });
+                });
+        }
     }
 
     // SETTERS & GETTERS //

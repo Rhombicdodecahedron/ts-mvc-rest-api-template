@@ -30,7 +30,7 @@ class App {
                 this.server = express();
 
                 let sess = {
-                    secret: 'keyboard sdlkflksdf',
+                    secret: 'example',
                     resave: true,
                     saveUninitialized: true,
                     cookie: {

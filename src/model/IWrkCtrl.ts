@@ -6,6 +6,10 @@ interface IWrkCtrl {
     initRouter(): Promise<Router>;
 
     getRouter(): Router;
+
+    isValid(_token: string): Promise<boolean>;
+
+    isConnected(_user): Promise<boolean>;
 }
 
 export default IWrkCtrl;

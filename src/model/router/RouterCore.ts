@@ -3,7 +3,6 @@ import {Router} from "express";
 import express = require("express");
 import Wrk from "../Wrk";
 import {Constants} from "../../app/Constants";
-import Authentication from "../core/Authentication";
 
 class RouterCore {
 
@@ -24,7 +23,7 @@ class RouterCore {
             try {
                 this.router = express.Router();
 
-                await this.router.get(`${Constants.API_URL}/login`, Authentication.isConnected, (_req, _res) => this.getWrk().handleLogin(_req, _res));
+                await this.router.get(`${Constants.API_URL}/login`, (_req, _res) => this.getWrk().handleLogin(_req, _res));
                 await this.router.get(`${Constants.API_URL}/logout`, (_req, _res) => this.getWrk().handleLogout(_req, _res));
                 await this.router.get(`${Constants.API_URL}/register`, (_req, _res) => this.getWrk().handleRegister(_req, _res));
 
